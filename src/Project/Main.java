@@ -12,6 +12,7 @@ public class Main {
                 new Hidden(3),
                 new Hidden(3),
                 new Hidden(3),
+                new Hidden(2),
                 new Output(3)
 
         }, 0.1);
