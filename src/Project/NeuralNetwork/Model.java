@@ -50,13 +50,15 @@ public class Model {
         layers[0].setValueLayer(data.getInput());
 
         for (int iter = 0; iter < epoch; iter++) {
-            //��������� �������� �������� ������� � ��������� ����
 
+
+
+            //Заполняем слои нейроной сети
             for (int i = 0; i < weights.length; i++) {
                 layers[i + 1].setValueNeuron(Matrix.multiply(new Matrix(layers[i]), weights[i]), bias[i]);
             }
 
-            // ��������� ������ ������ �������
+            //Ошибка нейроной сети
             AtomicInteger counter = new AtomicInteger(0);
             error = Arrays.stream(layers[layers.length - 1].neurons)
                 .map(neuron -> {
@@ -64,12 +66,42 @@ public class Model {
                     return Math.pow(neuron.getValue() - data.getOutput()[i], 2);
                 })
                 .reduce(0.0, Double::sum);
+
+            calcDeltaParameters(data);
+
+
         }
     }
 
+    //Расчитываем необходимое изменнеи парматеров для улучшения функции ошибки -> склоненияее к минимуму локаьному
+    private void calcDeltaParameters(Data data) {
+        //Опредлеяем delta для весов нейроной сети
+        //обходим массив весов, представленных в виде матрицы, обходим с конца в начаол так как обратное распроастнение ошибки
+        for (int i = weights.length - 1; i >= 0; i--) {
 
+            //после получения матрицы весов нам необходимо получить элементы ее и передать их в функцию опредления градиента,  а также передать значения правилное для этого нейрона
+            System.out.println("weight№ - " + i);
+            for (int row = 0; row < weights[i].values.length; row++) {
+                for (int col = 0; col < weights[i].values[row].length; col++) {
+                    double delta = calcGradientWeight(col, row, i + 1, data);
+                    System.out.print("row - " + row + " col - " + col + " value - " + delta + "\n");
+                    weights[i].values[row][col] += delta;
+                }
+            }
+        }
+    }
+    private double calcGradientWeight(int numberNeuronOutput, int numberNeuronInput, int numberLayout, Data data){
+        double gradient;
+        double dif_1 =  2 * layers[numberLayout].neurons[numberNeuronOutput].getValue() - data.getOutput()[numberNeuronOutput];
+        double dif_2 = 1 / 1 + Math.exp(-layers[numberLayout].neurons[numberNeuronOutput].getValueWithOutActivate());
+        double dif_3 = layers[numberLayout].neurons[numberNeuronOutput].getValue();
 
+        gradient = a * (dif_1 * dif_2 * dif_3);
 
+        System.out.println("dif_1 - " + dif_1 + " dif_2 - " + dif_2 + " dif_3 - " + dif_3 + " gradient - " + gradient);
+
+        return gradient;
+    }
 
 
 //    public void train(double[] valuesInput, double[] valuesOutput) {

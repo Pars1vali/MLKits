@@ -15,7 +15,8 @@ public class Main {
                 new Hidden(2),
                 new Output(2)
 
-        }, 0.1);
+        }, 0.01);
+
         Data data = new Data(new double[]{0.3,0.14,0.8}, new double[]{0,1});
 
         model.train(100, data);
