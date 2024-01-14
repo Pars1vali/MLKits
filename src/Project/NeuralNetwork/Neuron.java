@@ -1,4 +1,4 @@
-package Project;
+package Project.NeuralNetwork;
 
 import java.util.function.Function;
 
@@ -26,7 +26,7 @@ public class Neuron {
 
     @Override
     public String toString() {
-        return "Test.Neuron{" +
+        return "Neuron{" +
                 "value=" + value +
                 '}';
     }

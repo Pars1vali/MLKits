@@ -1,4 +1,4 @@
-package Project;
+package Project.NeuralNetwork;
 
 public class Activate {
 

@@ -1,14 +1,15 @@
-package Project;
+package Project.Kits;
+
+import Project.NeuralNetwork.Layer;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 public class Matrix {
     private int row;
     private int column;
-    double[][] values;
+    public double[][] values;
 
     public Matrix(int row, int column, boolean init) {
         this.row = row;
@@ -43,6 +44,7 @@ public class Matrix {
                     Arrays.stream(row).forEach(element-> System.out.printf(" %+1.2f", element));
                     System.out.println();
                 });
+        System.out.println("-----------");
     }
     public static Matrix multiply(Matrix m1, Matrix m2) {
         Matrix newMatrix = new Matrix(m1.row, m2.column);

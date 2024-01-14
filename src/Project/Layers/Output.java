@@ -1,6 +1,6 @@
 package Project.Layers;
 
-import Project.Layer;
+import Project.NeuralNetwork.Layer;
 
 public class Output extends Layer {
     public Output(int length) {
