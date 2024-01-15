@@ -2,7 +2,6 @@ package Project.NeuralNetwork;
 
 import Project.Kits.Data;
 import Project.Kits.Matrix;
-import Project.Layers.Input;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -36,7 +35,8 @@ public class Model {
                     return new Matrix(layers[i].getLength(), layers[i + 1].getLength(), true);
                 })
                 .toArray(Matrix[]::new);
-        //Arrays.stream(weights).forEach(m-> Matrix.print(m));
+
+        Arrays.stream(weights).forEach(m-> Matrix.print(m));
     }
 
     private void createBias() {
@@ -67,38 +67,59 @@ public class Model {
                 })
                 .reduce(0.0, Double::sum);
 
-            calcDeltaParameters(data);
+            calcDeltaWeight(data);
+            calcDeltaBias(data);
+           // System.out.println("iter - " + iter + ", error = " + error);
 
 
         }
     }
 
-    //Расчитываем необходимое изменнеи парматеров для улучшения функции ошибки -> склоненияее к минимуму локаьному
-    private void calcDeltaParameters(Data data) {
+
+
+    private void calcDeltaWeight(Data data) {
         //Опредлеяем delta для весов нейроной сети
         //обходим массив весов, представленных в виде матрицы, обходим с конца в начаол так как обратное распроастнение ошибки
         for (int i = weights.length - 1; i >= 0; i--) {
 
             //после получения матрицы весов нам необходимо получить элементы ее и передать их в функцию опредления градиента,  а также передать значения правилное для этого нейрона
-            System.out.println("weight№ - " + i);
             for (int row = 0; row < weights[i].values.length; row++) {
                 for (int col = 0; col < weights[i].values[row].length; col++) {
                     double delta = calcGradientWeight(col, row, i + 1, data);
-                    System.out.print("row - " + row + " col - " + col + " value - " + delta + "\n");
                     weights[i].values[row][col] += delta;
                 }
             }
         }
     }
+    private void calcDeltaBias(Data data) {
+
+        for (int row = bias.length - 1; row >= 0; row--) { //проходимся по массиву смещений нейронов для слоёв
+            for (int col = 0; col < bias[row].length; col++) {
+                bias[row][col] += calcGradientBias(row, col, data);
+            }
+
+        }
+    }
+
+
     private double calcGradientWeight(int numberNeuronOutput, int numberNeuronInput, int numberLayout, Data data){
         double gradient;
-        double dif_1 =  2 * layers[numberLayout].neurons[numberNeuronOutput].getValue() - data.getOutput()[numberNeuronOutput];
-        double dif_2 = 1 / 1 + Math.exp(-layers[numberLayout].neurons[numberNeuronOutput].getValueWithOutActivate());
-        double dif_3 = layers[numberLayout].neurons[numberNeuronOutput].getValue();
+        double dif_1 =  2 * (layers[numberLayout].neurons[numberNeuronOutput].getValue() - data.getOutput()[numberNeuronOutput]);
+        double dif_2 = 1 / 1 + Math.exp(-(layers[numberLayout].neurons[numberNeuronOutput].getValueWithOutActivate()));
+        double dif_3 = layers[numberLayout - 1].neurons[numberNeuronInput].getValue();
 
         gradient = a * (dif_1 * dif_2 * dif_3);
+        System.out.println(numberLayout + " " + numberNeuronInput + " " + numberNeuronOutput + " " + data.getOutput()[numberNeuronOutput]);
+        System.out.println("gradient - " + gradient);
+        return gradient;
+    }
+    private double calcGradientBias(int numberLayout, int numberNeuron, Data data) {
+        double gradient;
+        double dif_1 =  2 * (layers[numberLayout].neurons[numberNeuron].getValue() - data.getOutput()[numberNeuron]);
+        double dif_2 = 1 / 1 + Math.exp(-layers[numberLayout].neurons[numberNeuron].getValueWithOutActivate());
 
-        System.out.println("dif_1 - " + dif_1 + " dif_2 - " + dif_2 + " dif_3 - " + dif_3 + " gradient - " + gradient);
+
+        gradient = a * (dif_1 * dif_2);
 
         return gradient;
     }
@@ -165,7 +186,7 @@ public class Model {
             System.out.println(layers[i].toString());
             Matrix.print(weights[i]);
             System.out.println("Beas - ");
-            Arrays.stream(bias[i]).forEach(e-> System.out.print(" " + String.format("%1.0f",e)));
+            Arrays.stream(bias[i]).forEach(e-> System.out.print(" " + String.format("%1.3f",e)));
             System.out.println("\n" + layers[i + 1]);
         }
         System.out.println("Error = " + error);

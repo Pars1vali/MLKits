@@ -23,7 +23,7 @@ public class Layer {
     public void setValueNeuron(Matrix matrix, double[] bias) {
 
         for (int i = 0; i < neurons.length; i++) {
-            double z = matrix.values[0][i] + bias[i];
+            double z = matrix.values[0][i]+ bias[i];
             Neuron neuron = new Neuron(Activate.sigmoid(z));
             neuron.setValueWithOutActivate(z);
             neurons[i] = neuron;
